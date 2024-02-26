@@ -32,7 +32,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-tokyo-night)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -74,21 +74,39 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+(require 'package)
 (setq package-archives '(("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("org-cn". "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
-                         ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+                         ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"
+                          )))
+(package-initialize)
 
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+(require 'bind-key)
+
+;; load module settings
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lib" user-emacs-directory))
+
+(require 'init-gui-frames)
 
 ;;Key Configuration for Doom as Vanilla Emacs
 (setq evil-default-state 'emacs)
 
+(setq-default buffer-file-coding-system 'utf-8)
+
 (set-fontset-font t nil "Symbola" nil 'prepend)
 (set-face-attribute
  'default nil
- :font (font-spec :name "Monaco" 
-                  :weight 'normal
+ :font (font-spec :name "cascadia mono"
+                  :Weight 'normal
                   :slant 'normal
-                  :size 12.5))
+                  :size 11.5))
 (dolist (charset '(kana han symbol cjk-misc bopomofo))
   (set-fontset-font
    (frame-parameter nil 'font)
@@ -96,7 +114,15 @@
    (font-spec :name "KaiTi"
               :weight 'normal
               :slant 'normal
-              :size 15.0)))
+              :size
+              15.0)))
+
+;; Enable Cache
+(setq url-automatic-caching t)
+
+;; bing-dict
+(require 'bing-dict)
+(global-set-key (kbd "C-c d") 'bing-dict-brief)
 
 (defun previous-multilines ()
   "scroll down multiple lines"
@@ -115,15 +141,30 @@
 (setq auto-save-visited-mode t)
 (auto-save-visited-mode +1)
 
-(icomplete-mode 1)
 
-(global-company-mode 1)
-(define-key company-active-map (kbd "C-n") 'company-select-next)
-(define-key company-active-map (kbd "C-p") 'company-select-previous)
+(setq-default buffer-file-coding-system 'utf-8)
 
-(add-to-list 'load-path "~/.ema ")
+(require 'clipetty)
+(use-package clipetty
+  :ensure t
+  :bind ("M-w" . clipetty-kill-ring-save))
+
+
 ;(global-visual-line-mode t)
-;(require 'visual-fill-column)
-;(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
-;(setq-default visual-fill-column-center-text t)
-;(setq org-image-actual-width nil)
+(require 'visual-fill-column)
+(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+(setq-default visual-fill-column-center-text t)
+(setq org-image-actual-width nil)
+
+(require 'geiser)
+(setq geiser-active-implementations '(chez guile racket chicken mit chibi gambit))
+(setq scheme-program-name "racket")
+(setq geiser-scheme-implementation 'racket)
+(add-hook 'scheme-mode-hook 'geiser-mode)
+(setq geiser-default-implementation 'racket)
+
+
+(use-package ivy
+  :ensure t
+  :config
+  (ivy-mode 1))
