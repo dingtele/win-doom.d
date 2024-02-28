@@ -76,7 +76,7 @@
 ;; they are implemented.
 (require 'package)
 (setq package-archives '(("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                         ("org-cn". "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+                         ;("org-cn". "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
                          ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"
                           )))
 (package-initialize)
@@ -89,10 +89,19 @@
   (require 'use-package))
 (require 'bind-key)
 
+;;set env for curl
+(setenv "PATH" (concat (getenv "PATH") ":$home/scoop/apps/curl/current/bin/curl.exe"));;replaceable-path
+;; (defun set-exec-path-from-shell-PATH () ;
+
+;;   )
+
+
 ;; load module settings
+(setq user-emacs-directory "~/.emacs.d/");;replaceable-path
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "lib" user-emacs-directory))
 
+(require 'init-setup)
 (require 'init-gui-frames)
 
 ;;Key Configuration for Doom as Vanilla Emacs
@@ -103,7 +112,8 @@
 (set-fontset-font t nil "Symbola" nil 'prepend)
 (set-face-attribute
  'default nil
- :font (font-spec :name "cascadia mono"
+ :font (font-spec :name "cascadia Mono"
+ ;:font (font-spec :name "UbuntuMono Nerd Font Mono"
                   :Weight 'normal
                   :slant 'normal
                   :size 11.5))
@@ -111,11 +121,12 @@
   (set-fontset-font
    (frame-parameter nil 'font)
    charset
-   (font-spec :name "KaiTi"
+   (font-spec :name "仓耳今楷02 W04"
+   ;(font-spec :name "LXGW WenKai"
               :weight 'normal
               :slant 'normal
               :size
-              15.0)))
+              12.5)))
 
 ;; Enable Cache
 (setq url-automatic-caching t)
@@ -123,6 +134,9 @@
 ;; bing-dict
 (require 'bing-dict)
 (global-set-key (kbd "C-c d") 'bing-dict-brief)
+(setq bing-dict-vocabulary-file "C:/Users/yuding/iCloudDrive/Documents/emacs-bing_vocabulary.org")
+(setq bing-dict-vocabulary-save t)
+;;replaceable-path
 
 (defun previous-multilines ()
   "scroll down multiple lines"
@@ -156,6 +170,13 @@
 (setq-default visual-fill-column-center-text t)
 (setq org-image-actual-width nil)
 
+(defun enable-visual-fill-column-mode ()
+  "Enable visual-fill-column-mode in specific buffers."
+  (visual-fill-column-mode 1))
+
+(add-hook 'message-mode-hook 'enable-visual-fill-column-mode)
+(add-hook 'help-mode-hook 'enable-visual-fill-column-mode)
+
 (require 'geiser)
 (setq geiser-active-implementations '(chez guile racket chicken mit chibi gambit))
 (setq scheme-program-name "racket")
@@ -168,3 +189,15 @@
   :ensure t
   :config
   (ivy-mode 1))
+ (ivy-mode 1)
+
+;;key-bindings
+(defun select-current-line ()
+  "Select the line at the current cursor position."
+  (interactive)
+  (let ((line-begin (line-beginning-position))
+        (line-end (line-end-position)))
+    (goto-char line-begin)
+    (set-mark line-end)))
+
+(global-set-key (kbd "C-c C-s") 'select-current-line)
