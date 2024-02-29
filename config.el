@@ -112,8 +112,8 @@
 (set-fontset-font t nil "Symbola" nil 'prepend)
 (set-face-attribute
  'default nil
- :font (font-spec :name "cascadia Mono"
- ;:font (font-spec :name "UbuntuMono Nerd Font Mono"
+ :font (font-spec :name "IBM Plex Mono"
+                  ;;Iosevka;;cascadia mono;;
                   :Weight 'normal
                   :slant 'normal
                   :size 11.5))
@@ -127,6 +127,15 @@
               :slant 'normal
               :size
               12.5)))
+
+(defun set-org-mode-font ()
+  "Set a specific font for Org-mode buffers."
+  (interactive)
+  (setq buffer-face-mode-face '(:family "cascadia mono" :height 120)) ; Customize the font family and size
+  (buffer-face-mode))
+
+(add-hook 'org-mode-hook 'set-org-mode-font)
+
 
 ;; Enable Cache
 (setq url-automatic-caching t)
@@ -173,9 +182,18 @@
 (defun enable-visual-fill-column-mode ()
   "Enable visual-fill-column-mode in specific buffers."
   (visual-fill-column-mode 1))
-
 (add-hook 'message-mode-hook 'enable-visual-fill-column-mode)
 (add-hook 'help-mode-hook 'enable-visual-fill-column-mode)
+
+(add-hook 'after-make-frame-functions 'adjust-fill-column-to-frame-width)
+(defun adjust-fill-column-to-frame-width (frame)
+  "Adjust the `fill-column` to match the width of the FRAME."
+  (with-selected-frame frame
+    (setq fill-column (window-width))))
+;; Set `fill-column` for the initial frame
+(when (display-graphic-p)
+  (setq fill-column (window-width)))
+
 
 (require 'geiser)
 (setq geiser-active-implementations '(chez guile racket chicken mit chibi gambit))
@@ -184,12 +202,7 @@
 (add-hook 'scheme-mode-hook 'geiser-mode)
 (setq geiser-default-implementation 'racket)
 
-
-(use-package ivy
-  :ensure t
-  :config
-  (ivy-mode 1))
- (ivy-mode 1)
+(ivy-mode 1)
 
 ;;key-bindings
 (defun select-current-line ()
