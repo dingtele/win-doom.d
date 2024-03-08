@@ -101,8 +101,6 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "lib" user-emacs-directory))
 
-(require 'init-setup)
-(require 'init-gui-frames)
 
 ;;Key Configuration for Doom as Vanilla Emacs
 (setq evil-default-state 'emacs)
@@ -141,7 +139,7 @@
 (setq url-automatic-caching t)
 
 ;; bing-dict
-(require 'bing-dict)
+(use-package bing-dict :ensure t)
 (global-set-key (kbd "C-c d") 'bing-dict-brief)
 (setq bing-dict-vocabulary-file "C:/Users/yuding/iCloudDrive/Documents/emacs-bing_vocabulary.org")
 (setq bing-dict-vocabulary-save t)
@@ -150,7 +148,7 @@
 (defun previous-multilines ()
   "scroll down multiple lines"
   (interactive)
-  (scroll-down (/ (window-body-3) height)))
+  (scroll-down (/ (window-body-height) 3)))
 
 (defun next-multilines ()
   "scroll up multiple lines"
@@ -167,14 +165,13 @@
 
 (setq-default buffer-file-coding-system 'utf-8)
 
-(require 'clipetty)
 (use-package clipetty
   :ensure t
   :bind ("M-w" . clipetty-kill-ring-save))
 
 
-;(global-visual-line-mode t)
-(require 'visual-fill-column)
+(global-visual-line-mode t)
+(use-package visual-fill-column :ensure t)
 (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 (setq-default visual-fill-column-center-text t)
 (setq org-image-actual-width nil)
@@ -195,13 +192,14 @@
   (setq fill-column (window-width)))
 
 
-(require 'geiser)
+(use-package geiser :ensure t)
 (setq geiser-active-implementations '(chez guile racket chicken mit chibi gambit))
 (setq scheme-program-name "racket")
 (setq geiser-scheme-implementation 'racket)
 (add-hook 'scheme-mode-hook 'geiser-mode)
 (setq geiser-default-implementation 'racket)
 
+(use-package ivy :ensure t)
 (ivy-mode 1)
 
 ;;key-bindings
